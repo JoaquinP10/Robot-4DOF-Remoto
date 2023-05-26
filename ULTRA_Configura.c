@@ -5,7 +5,7 @@
  Entradas: Ninguna
  Salidas: Ninguna
  Autor: Joaquin Pozo
- Ultima modificacion: 20 de mayo de 2023
+ Ultima modificacion: 25 de mayo de 2023
 ****************************************************************************************/
 
 #include "tm4c123fg6pm.h"
@@ -28,39 +28,23 @@ void ULTRA_Configura(void){
     SYSCTL_RCGCTIMER_R |= 0x08;  // Habilitar el reloj del Timer 3
     while((SYSCTL_PRTIMER_R & 0x08) == 0);  // Esperar a que el reloj este listo
 
+    TIMER3_CTL_R &= ~0x01; // Deshabilita Timer3A durante la configuración
+    TIMER3_CFG_R = 0x04; // Temporizador de 16 bits
+    TIMER3_TAMR_R = (TIMER3_TAMR_R & ~0xFFF) | 0x7; //Configura como Capture Mode (¿TACDIR?)                               
+    TIMER3_CTL_R &= ~(TIMER_CTL_TAEVENT_POS|0xC); // (0xC: both edges)
+    TIMER3_TAPR_R = 0xFF;            // Maximo valor de preescalado
+    TIMER3_TAILR_R = 0xFFFF;         // Maximo valor de inicio
+    TIMER3_IMR_R |= 0x04; // enable capture match interrupt
+    TIMER3_ICR_R = 0x04; // borrar captura de coincidencia del Timer3A .This register is used to clear the status bits in the GPTMRIS and GPTMMIS registers.
+    TIMER3_CTL_R |= 0x01;  // Habilita Timer3A
+    //TIMER3_RIS_R...
     /*
-
-    #define NVIC_EN0_INT19          0x00080000  // Interrupt 19 enable
-
-    #define TIMER_CFG_16_BIT        0x00000004  // 16-bit timer configuration,
-                                                // function is controlled by bits
-                                                // 1:0 of GPTMTAMR and GPTMTBMR
-    #define TIMER_TAMR_TACMR        0x00000004  // GPTM TimerA Capture Mode
-    #define TIMER_TAMR_TAMR_CAP     0x00000003  // Capture mode
-    #define TIMER_CTL_TAEN          0x00000001  // GPTM TimerA Enable
-    #define TIMER_CTL_TAEVENT_POS   0x00000000  // Positive edge
-    #define TIMER_IMR_CAEIM         0x00000004  // GPTM CaptureA Event Interrupt
-                                                // Mask
-    #define TIMER_ICR_CAECINT       0x00000004  // GPTM CaptureA Event Interrupt
-                                                // Clear
-    #define TIMER_TAILR_M           0xFFFFFFFF  // GPTM Timer A Interval Load
-                                                // Register
-
-                                                
-    TIMER3_CTL_R &= ~0x08; // disable timer0A during setup
-    TIMER3_CFG_R = 0x04; // configure for 16-bit timer mode
-    TIMER3_TAMR_R = (TIMER3_TAMR_R & ~0xFFF) + 7
-                                    // configure for rising edge event
-    TIMER3_CTL_R &= ~(TIMER_CTL_TAEVENT_POS|0xC);
-    TIMER3_TAILR_R = 0xFFFF;         // max start value
-    TIMER3_TAPR_R = 0xFF;            // max prescale value
-    TIMER3_IMR_R |= TIMER_IMR_CAEIM; // enable capture match interrupt
-    TIMER3_ICR_R = TIMER_ICR_CAECINT;// clear timer0A capture match flag
-    TIMER3_CTL_R |= TIMER_CTL_TAEN;  // enable timer0A 16-b, +edge timing, interrupts
-                                    // Timer0A=priority 2
-    NVIC_PRI4_R = (NVIC_PRI4_R&0x00FFFFFF)|0x40000000; // top 3 bits
-    NVIC_EN0_R = NVIC_EN0_INT19;     // enable interrupt 19 in NVIC
+    Poll the CnERIS bit in the GPTMRIS register or wait for the interrupt to be generated (if enabled).
+    In both cases, the status flags are cleared by writing a 1 to the CnECINT bit of the GPTM
+    Interrupt Clear (GPTMICR) register. The time at which the event happened can be obtained
+    by reading the GPTM Timer n (GPTMTnR) register
     */
+
 
 
 
