@@ -17,6 +17,15 @@
 #include <stdio.h>
 #include "UART.h"
 
+#define BIT0 0x01
+#define BIT1 0x02
+#define BIT2 0x04
+#define BIT3 0x08
+#define BIT4 0x10
+#define BIT5 0x20
+#define BIT6 0x40
+#define BIT7 0x80
+
 void UART_ConfigurarBluetooth(void){
     //activar senal de reloj GPIO en A
     SYSCTL_RCGCGPIO_R = SYSCTL_RCGCGPIO_R0;
@@ -32,23 +41,27 @@ void UART_ConfigurarBluetooth(void){
     UART1_CTL_R &= ~UART_CTL_UARTEN;
 
     //Configurar PB0 PB1
-    GPIO_PORTB_AMSEL_R &= ~(0x03); //Funciones analogicas desactivadas en PB0 PB1
-    GPIO_PORTB_DEN_R |= 0x03; //Se habilitan funciones digitales
-    GPIO_PORTB_AFSEL_R |= 0x03; //Se habilita funcion alternativa
+    GPIO_PORTB_AMSEL_R &= ~(BIT0 | BIT1); //Funciones analogicas desactivadas en PB0 PB1
+    GPIO_PORTB_DEN_R |= (BIT0 | BIT1) ; //Se habilitan funciones digitales
+    GPIO_PORTB_AFSEL_R |= (BIT0 | BIT1); //Se habilita funcion alternativa
 
     //Se escogen los nibbles con el valor que corresponde a U1Tx y U1Rx 
     GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R & 0xFFFFFF00)|0x00000011; 
 
     //Configurar PA0 PA1
-    GPIO_PORTA_DIR_R = (GPIO_PORTA_DIR_R & (~0x01)) | (0x20); //Coloca a PA0 como entrada y PA1 como salida
-    GPIO_PORTA_AMSEL_R &= ~(0x03); //Funciones analogicas desactivadas en PB0 PB1
-    GPIO_PORTA_DEN_R |= 0x03; //Se habilitan funciones digitales
-    GPIO_PORTA_AFSEL_R &= ~0x03; //Se utilizan como GPIO
-	  //GPIO_PORTA_DR8R_R |= 0x10; /Se activa Driver en PA1
+    GPIO_PORTA_DIR_R = (GPIO_PORTA_DIR_R & (~0x01)) | (0x02); //Coloca a PA0 como entrada y PA1 como salida
+    GPIO_PORTA_AMSEL_R &= ~(BIT0 | BIT1); //Funciones analogicas desactivadas en PB0 PB1
+	GPIO_PORTA_PDR &= ~(BIT0 | BIT1); //Sin resistencia de pull down
+	GPIO_PORTA_PDR &= ~(BIT0 | BIT1); //Sin resistencia de pull up
+	
+	
+    GPIO_PORTA_DEN_R |= (BIT0 | BIT1); //Se habilitan funciones digitales
+    GPIO_PORTA_AFSEL_R &= ~(BIT0 | BIT1); //Se utilizan como GPIO
+	//GPIO_PORTA_DR8R_R |= 0x10; /Se activa Driver en PA1
 
     //Configurar velocidad.
-    UART1_IBRD_R = (UART1_IBRD_R & 0xFFFF0000) | 104; //BRD = 16,000,000 / (16 * 9600) = 104.1667
-    UART1_FBRD_R = (UART1_FBRD_R & 0xFFFFFFC0) | 11; // DIVFRAC = 0.1667 * 64 + 0.5 = 11.3333
+    UART1_IBRD_R = (UART1_IBRD_R & 0xFFFF0000) + 104; //BRD = 16,000,000 / (16 * 9600) = 104.1667
+    UART1_FBRD_R = (UART1_FBRD_R & 0xFFFFFFC0) + 11; // DIVFRAC = 0.1667 * 64 + 0.5 = 11.3333
 
     //Configurar trama y buffers
     // 8, N, 1, FIFOs habilitados
