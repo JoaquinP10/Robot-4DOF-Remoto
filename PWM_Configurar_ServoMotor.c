@@ -17,6 +17,10 @@
 #include "tm4c123gh6pm.h"
 #include <stdint.h>
 #include <SERVO.h>
+#define FREQUENCY 50 //Hz
+#define SYS_CLOCK 10 000 000 //Hz
+#define DIVFREQ 4
+
 
 void PWM_Configurar_ServoMotor(void){
     
@@ -44,17 +48,17 @@ void PWM_Configurar_ServoMotor(void){
     PWM0_0_GENA_R = 0xC8;
     PWM0_0_GENB_R = 0xC08;
     PWM1_0_GENA_R = 0xC8;
-    PWM0_0_GENB_R = 0xC08;
+    PWM1_0_GENB_R = 0xC08;
 
     // frecuencia base = 
-    PWM0_0_LOAD_R = ;
-    PWM1_0_LOAD_R = ;
+    PWM0_0_LOAD_R = ((SYS_CLOCK/DIVFREQ)/FREQUENCY);
+    PWM1_0_LOAD_R = ((SYS_CLOCK/DIVFREQ)/FREQUENCY);
 
-    // Ciclo de trabajo = 
-    PWM0_0_CMPA_R = ;
-    PWM0_0_CMPB_R = ;
-    PWM1_0_CMPA_R = ;
-    PWM1_0_CMPB_R = ;
+    // Ciclo de trabajo = 25%
+    PWM0_0_CMPA_R = PWM0_0_LOAD_R * 0.25;
+    PWM0_0_CMPB_R = PWM1_0_LOAD_R * 0.25;
+    PWM1_0_CMPA_R = PWM1_0_LOAD_R * 0.25;
+    PWM1_0_CMPB_R = PWM1_0_LOAD_R * 0.25;
 
     // Inicializamos PWM0 PWM1
     PWM0_0_CTL_R |= 0x01;
