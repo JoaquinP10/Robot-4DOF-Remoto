@@ -53,8 +53,6 @@ void UART_ConfigurarBluetooth(void){
     GPIO_PORTA_AMSEL_R &= ~(BIT0 | BIT1); //Funciones analogicas desactivadas en PB0 PB1
 	GPIO_PORTA_PDR &= ~(BIT0 | BIT1); //Sin resistencia de pull down
 	GPIO_PORTA_PDR &= ~(BIT0 | BIT1); //Sin resistencia de pull up
-	
-	
     GPIO_PORTA_DEN_R |= (BIT0 | BIT1); //Se habilitan funciones digitales
     GPIO_PORTA_AFSEL_R &= ~(BIT0 | BIT1); //Se utilizan como GPIO
 	//GPIO_PORTA_DR8R_R |= 0x10; /Se activa Driver en PA1
