@@ -26,7 +26,7 @@
 #define BIT6 0x40
 #define BIT7 0x80
 
-void UART_ConfigurarBluetooth(void){
+void main(void){
     //activar senal de reloj GPIO en A
     SYSCTL_RCGCGPIO_R = SYSCTL_RCGCGPIO_R0;
     while((SYSCTL_PRGPIO_R & SYSCTL_PRGPIO_R0) == 0);
@@ -51,8 +51,8 @@ void UART_ConfigurarBluetooth(void){
     //Configurar PA0 PA1
     GPIO_PORTA_DIR_R = (GPIO_PORTA_DIR_R & (~0x01)) | (0x02); //Coloca a PA0 como entrada y PA1 como salida
     GPIO_PORTA_AMSEL_R &= ~(BIT0 | BIT1); //Funciones analogicas desactivadas en PB0 PB1
-	GPIO_PORTA_PDR &= ~(BIT0 | BIT1); //Sin resistencia de pull down
-	GPIO_PORTA_PDR &= ~(BIT0 | BIT1); //Sin resistencia de pull up
+	GPIO_PORTA_PDR_R &= ~(BIT0 | BIT1); //Sin resistencia de pull down
+	GPIO_PORTA_PUR_R &= ~(BIT0 | BIT1); //Sin resistencia de pull up
     GPIO_PORTA_DEN_R |= (BIT0 | BIT1); //Se habilitan funciones digitales
     GPIO_PORTA_AFSEL_R &= ~(BIT0 | BIT1); //Se utilizan como GPIO
 	//GPIO_PORTA_DR8R_R |= 0x10; /Se activa Driver en PA1
