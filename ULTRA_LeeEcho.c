@@ -1,7 +1,7 @@
 /**************************************************************************
- Funcion ULTRA_LeeEcho
+ Funcion ULTRA_MideDistancia
  Descripcion: Lee el tiempo de duracion del pulso echo generado por 
- el sensor ultrasonico HC-SR04 y lo devuelve como resultado.
+ el sensor ultrasonico HC-SR04 y lo devuelve como resultado en segunoos.
  Entradas: Ninguna
  Salidas: Tiempo de duracion del pulso echo generado por el sensor 
  ultrasonico, en ciclos de reloj del microcontrolador.
@@ -9,11 +9,13 @@
  Ultima modificacion: 30 de mayo de 2023
 ***************************************************************************/
 
+//corregir caratula
+
 #include "tm4c123gh6pm.h"
 #include <stdint.h>
 #include "ULTRA.h"
 
-uint32_t ULTRA_LeeEcho(void){
+uint32_t ULTRA_MideDistancia(void){
 
     uint32_t flancoSubida, flancoBajada;
     uint32_t i;

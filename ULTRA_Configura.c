@@ -35,8 +35,7 @@ void ULTRA_Configura(void){
     TIMER3_TAMR_R |= 0x17; //Configura como Capture Mode, y cuenta ascendente (TIMERTAILR = 0x00)                        
     TIMER3_CTL_R |= 0xC; //captura en flanco de subida y de bajada
     //TIMER3_TAPR_R = 0xFF;            // Maximo valor de preescalado
-    //TIMER3_TAILR_R = 0xFFFF;         // Maximo valor de inicio
-    //TIMER3_IMR_R |= 0x04; // enable capture match interrupt
+    
     TIMER3_ICR_R = 0x04; // borrar flag de captura
     TIMER3_CTL_R |= 0x01;  // Habilita Timer3A
 }
