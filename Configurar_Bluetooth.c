@@ -8,8 +8,8 @@
  coneccion.
  Entradas: Ninguna
  Salidas: Ninguna
- Autor: 
- Ultima modificacion: 6 de junio de 2023
+ Autor: Joaquin Pozo
+ Ultima modificacion: 14 de junio de 2023
 ****************************************************************************************/
 
 #include "tm4c123gh6pm.h"
@@ -34,25 +34,27 @@ void main(void){
     SYSCTL_RCGCGPIO_R = SYSCTL_RCGCGPIO_R1;
     while((SYSCTL_PRGPIO_R & SYSCTL_PRGPIO_R1) == 0);
     //activar senal de reloj UART en B
-    SYSCTL_RCGC1_R = SYSCTL_RCGC1_UART1;
+    SYSCTL_RCGC_UART_R = SYSCTL_RCGC1_UART1;
     while((SYSCTL_PRUART_R & SYSCTL_PRUART_R1) == 0);
-
+    
     //Desactivar el modulo UART
     UART1_CTL_R &= ~UART_CTL_UARTEN;
 
     //Configurar PB0 PB1
+    GPIO_PORTA_DIR_R &= ~BIT0; //PB0 entrada
+    GPIO_PORTA_DIR_R |= BIT1; //PB1 salida
     GPIO_PORTB_AMSEL_R &= ~(BIT0 | BIT1); //Funciones analogicas desactivadas en PB0 PB1
+    GPIO_PORTB_PDR_R &= ~(BIT0 | BIT1); //Sin resistencia de pull down
+    GPIO_PORTB_PUR_R &= ~(BIT0 | BIT1); //Sin resistencia de pull up
     GPIO_PORTB_DEN_R |= (BIT0 | BIT1) ; //Se habilitan funciones digitales
     GPIO_PORTB_AFSEL_R |= (BIT0 | BIT1); //Se habilita funcion alternativa
 
     //Se escogen los nibbles con el valor que corresponde a U1Tx y U1Rx 
     GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R & 0xFFFFFF00)|0x00000011; 
 
-    //Configurar PA0 PA1
+    //Configurar PA0 (enable/key) PA1(state)
     GPIO_PORTA_DIR_R = (GPIO_PORTA_DIR_R & (~0x01)) | (0x02); //Coloca a PA0 como entrada y PA1 como salida
-    GPIO_PORTA_AMSEL_R &= ~(BIT0 | BIT1); //Funciones analogicas desactivadas en PB0 PB1
-    GPIO_PORTA_PDR_R &= ~(BIT0 | BIT1); //Sin resistencia de pull down
-    GPIO_PORTA_PUR_R &= ~(BIT0 | BIT1); //Sin resistencia de pull up
+    GPIO_PORTA_AMSEL_R &= ~(BIT0 | BIT1); //Funciones analogicas desactivadas en PA0 PA1
     GPIO_PORTA_DEN_R |= (BIT0 | BIT1); //Se habilitan funciones digitales
     GPIO_PORTA_AFSEL_R &= ~(BIT0 | BIT1); //Se utilizan como GPIO
 	//GPIO_PORTA_DR8R_R |= 0x10; /Se activa Driver en PA1
@@ -66,5 +68,13 @@ void main(void){
     UART1_LCRH_R = (UART0_LCRH_R & 0xFFFFFF00) | 0x70;
 
     //Habilitar UART
-    UART1_CTL_R &= ~UART_CTL_UARTEN;
+    UART1_CTL_R &= ~0x20; //HSE=0 (/16)
+    UART1_CTL_R |= 0x301; //UARTEN = 1, RXE = 1, TXE = 1
 }
+
+//How to change master/slave
+//AT+ROLE=0
+//Other useful commands:
+//AT+PSWD? //password
+//AT //are you in config mode? //change modes with button, or with key/state pin
+//
