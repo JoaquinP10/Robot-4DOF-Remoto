@@ -13,9 +13,8 @@
 
 #include "tm4c123gh6pm.h"
 #include <stdint.h>
-#include "ULTRA.h"
 
-uint32_t ULTRA_MideDistancia(void){
+uint32_t Ultra_MideDistancia(void){
 
     uint32_t flancoSubida, flancoBajada;
     uint32_t i;
