@@ -1,21 +1,21 @@
 /***************************************************************************************
- Funcion ULTRA_Configura()
- Descripcion: Configura el puerto A para el control del sensor ultrasonico. 
- Se configuran los puertos PB2 como GPIO y PB3 como un temporizador en modo Input Capture (IC)
+ Funcion Ultra_Configura()
+ Descripcion: Configura el puerto B para el control del sensor ultrasonido. 
+ Se configuran los puertos PB3 como GPIO (TRIGGER) y PB2 (ECHO) como un temporizador 
+ de proposito general en modo Input Capture (IC)
  Entradas: Ninguna
  Salidas: Ninguna
  Autor: Joaquin Pozo
- Ultima modificacion: 13 de junio de 2023
+ Ultima modificacion: 20 de junio de 2023
 ****************************************************************************************/
 
 #include "tm4c123gh6pm.h"
 #include <stdint.h>
-#include "ULTRA.h"
 
 #define TRIGGER (1<<3) //PB3
 #define ECHO (1<<2) //PB2
 
-void ULTRA_Configura(void){
+void Ultra_Configura(void){
     SYSCTL_RCGCGPIO_R |= 0x02;  // Habilitar el reloj del Puerto B
     while((SYSCTL_PRGPIO_R & 0x02) == 0);  // Esperar a que el reloj este listo
 
@@ -36,7 +36,7 @@ void ULTRA_Configura(void){
     TIMER3_CTL_R &= ~0x01; // Deshabilita Timer3A durante la configuracion
     TIMER3_CFG_R |= 0x04; // Temporizador de 16 bits
     TIMER3_TAMR_R |= 0x17; //Configura como Capture Mode, y cuenta ascendente (TIMERTAILR = 0x00)
- //   TIMER3_TAPR_R |= 0x02;
+    TIMER3_TAPR_R |= 128; //Preescalador
     TIMER3_CTL_R |= 0x0C; //captura en flanco de subida y de bajada
     TIMER3_CTL_R |= 0x01;  // Habilita Timer3A
 }
